@@ -16,6 +16,8 @@ import yaml
 from torch.optim import lr_scheduler
 from tqdm import tqdm
 
+import intel_extension_for_pytorch as ipex
+
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # root directory
 if str(ROOT) not in sys.path:
@@ -251,6 +253,7 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
                 f'Starting training for {epochs} epochs...')
     for epoch in range(start_epoch, epochs):  # epoch ------------------------------------------------------------------
         callbacks.run('on_train_epoch_start')
+        model, optimizer = ipex.optimize(model, optimizer=optimizer)
         model.train()
 
         # Update image weights (optional, single-GPU only)
